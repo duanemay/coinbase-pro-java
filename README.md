@@ -1,11 +1,9 @@
-# gdax-java
+# coinbase-pro-java
 
-[![Join the chat at https://gitter.im/irufus/gdax-java](https://badges.gitter.im/irufus/gdax-java.svg)](https://gitter.im/irufus/gdax-java?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-Java based wrapper for the [GDAX API](https://docs.gdax.com/#introduction) that follows the development style similar to [coinbase-java](https://github.com/coinbase/coinbase-java)
+Java based services to call the [Coinbase Pro API](https://docs.pro.coinbase.com/) that follows the development style similar to [coinbase-java](https://github.com/coinbase/coinbase-java)
 
 #Notes:
->GDAX primary data sources and servers run in the Amazon US East data center. To minimize latency for API access, we recommend making requests from servers located near the US East data center.
+>coinbase-pro primary data sources and servers run in the Amazon US East data center. To minimize latency for API access, we recommend making requests from servers located near the US East data center.
 
 >Some of the methods do not yet have tests and so may not work as expected until a later date. Please raise an issue in github if you want something in particular as a priority. I'll be looking to fully flesh this out if possible over the coming months.
 
@@ -20,7 +18,7 @@ e.g.
     new OrderService();
 }`
 
-This works better if you declare the above method as a google guice/spring bean and then wire it in using dependency injection.
+This works better if you declare the above method as a spring bean and then wire it in using dependency injection.
 
 Then in your method you can carry out any of the public api operations such as `orderService().createOrder(NewSingleOrder order);` - this creates a limit order. Currently this is only the basic order.
 #API
@@ -41,13 +39,6 @@ The Api for this application/library is as follows:
 - `PaymentService.getPaymentTypes()` - gets the payment types available for the logged in user
 - `ProductService.getProducts()` - returns an array of Products available from the exchange - BTC-USD, BTC-EUR, BTC-GBP, etc.
 - `ReportService.createReport(String product, String startDate, String endDate)` - not certain about this one as I've not tried it but presumably generates a report of a given product's trade history for the dates supplied
-
-#WebsocketFeed API
----------------------
-
-At present the WebsocketFeed is implemented and does work (as in it will receive the messages from the exchange and route them according to the message type) but it requires you to pass a `new Subscribe(productIds)` message to it and to implement an OrderBook class as I've partly done under the `gui` package (as I was attempting to build a desktop gui since the web one has consistently had problems).
-
-Presently this is not an interface as this is a work in progress, however feel free to fork this repo, make the change and send me a pull request back and I'll gladly merge in the change.
 
 #Updates
 --------

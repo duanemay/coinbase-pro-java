@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.1</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.mayhoo</groupId>
+    <artifactId>coinbasepro-parent</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <name>Coinbase Pro :: Parent</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <java.version>11</java.version>
+
+        <resource.delimiter>@</resource.delimiter>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- https://mvnrepository.com/artifact/org.assertj/assertj-assertions-generator-maven-plugin -->
+        <assertj-assertions-generator-maven-plugin.version>2.2.0</assertj-assertions-generator-maven-plugin.version>
+
+        <!-- Maven Enforcer Settings: https://maven.apache.org/enforcer/maven-enforcer-plugin -->
+        <enforcer.skip>false</enforcer.skip>
+        <enforcer.maven-version>[3.8.3,)</enforcer.maven-version>
+        <enforcer.java-version>[11,)</enforcer.java-version>
+        <enforcer.failBuild>true</enforcer.failBuild>
+
+        <!-- JaCoCo Plugin: https://www.eclemma.org/jacoco/trunk/index.html -->
+        <jacoco.plugin.version>0.8.8</jacoco.plugin.version>
+    </properties>
+
+    <scm>
+        <developerConnection>scm:git:ssh://git@github.com/duanemay/gdax-java.git</developerConnection>
+        <connection>scm:git:https://git@github.com/duanemay/gdax-java.git</connection>
+        <url>https://github.com/duanemay/gdax-java</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <modules>
+        <module>model</module>
+        <module>impl</module>
+        <module>autoconfigure</module>
+        <module>starter</module>
+        <module>example</module>
+        <module>assertions</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>enforcer-info</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>display-info</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>enforcer-enforce</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${enforcer.skip}</skip>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>${enforcer.maven-version}</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>${enforcer.java-version}</version>
+                                </requireJavaVersion>
+                            </rules>
+                            <fail>${enforcer.failBuild}</fail>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- JaCoCo Support -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>prepare-agent-integration</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report-integration</id>
+                        <goals>
+                            <goal>report-integration</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>artifact-registry</id>
+            <url>artifactregistry://us-east4-maven.pkg.dev/builds-265120/mayhoo-repo</url>
+        </snapshotRepository>
+        <repository>
+            <id>artifact-registry</id>
+            <url>artifactregistry://us-east4-maven.pkg.dev/builds-265120/mayhoo-repo</url>
+        </repository>
+    </distributionManagement>
+</project>

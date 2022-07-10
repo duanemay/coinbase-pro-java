@@ -1,0 +1,8 @@
+# Library Build
+steps:
+  # Run the Maven build
+  - name: maven:3.8.6-amazoncorretto-17
+    entrypoint: 'mvn'
+    args:
+      - clean
+      - deploy
