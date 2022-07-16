@@ -13,6 +13,8 @@ import lombok.Value;
 public class AccountServiceImpl implements AccountService {
 
     private static final String ACCOUNTS_ENDPOINT = "/accounts";
+    private static final String LEDGER = "/ledger";
+    private static final String HOLDS = "/holds";
 
     CoinbaseProExchange exchange;
 
@@ -37,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountHistory[] getAccountHistory(String accountId) {
-        String accountHistoryEndpoint = ACCOUNTS_ENDPOINT + "/" + accountId + "/ledger";
+        String accountHistoryEndpoint = ACCOUNTS_ENDPOINT + "/" + accountId + LEDGER;
         return exchange.get(accountHistoryEndpoint, AccountHistory[].class);
     }
 
@@ -47,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
                                                    Integer pageNumber,
                                                    Integer limit) {
 
-        String accountHistoryEndpoint = ACCOUNTS_ENDPOINT + "/" + accountId + "/ledger";
+        String accountHistoryEndpoint = ACCOUNTS_ENDPOINT + "/" + accountId + LEDGER;
         return exchange.pagedGet(accountHistoryEndpoint,
                 AccountHistory[].class,
                 beforeOrAfter,
@@ -57,7 +59,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Hold[] getHolds(String accountId) {
-        String holdsEndpoint = ACCOUNTS_ENDPOINT + "/" + accountId + "/holds";
+        String holdsEndpoint = ACCOUNTS_ENDPOINT + "/" + accountId + HOLDS;
         return exchange.get(holdsEndpoint, Hold[].class);
     }
 
@@ -66,7 +68,7 @@ public class AccountServiceImpl implements AccountService {
                                 String beforeOrAfter,
                                 Integer pageNumber,
                                 Integer limit) {
-        String holdsEndpoint = ACCOUNTS_ENDPOINT + "/" + accountId + "/holds";
+        String holdsEndpoint = ACCOUNTS_ENDPOINT + "/" + accountId + HOLDS;
         return exchange.pagedGet(holdsEndpoint,
                 Hold[].class,
                 beforeOrAfter,

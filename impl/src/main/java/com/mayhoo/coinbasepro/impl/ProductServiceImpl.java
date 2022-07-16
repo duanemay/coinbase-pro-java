@@ -13,7 +13,6 @@ public class ProductServiceImpl implements ProductService {
 
     CoinbaseProExchange exchange;
 
-    // no paged products necessary
     @Override
     public Product[] getProducts() {
         return exchange.get(PRODUCTS_ENDPOINT, Product[].class);

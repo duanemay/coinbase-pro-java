@@ -1,56 +1,83 @@
-# coinbase-pro-java
+# Coinbase Pro Java
 
-Java based services to call the [Coinbase Pro API](https://docs.pro.coinbase.com/) that follows the development style similar to [coinbase-java](https://github.com/coinbase/coinbase-java)
+Java based services to call the [Coinbase Pro API](https://docs.pro.coinbase.com/) that follows the development style
+similar to [coinbase-java](https://github.com/coinbase/coinbase-java)
 
-#Notes:
->coinbase-pro primary data sources and servers run in the Amazon US East data center. To minimize latency for API access, we recommend making requests from servers located near the US East data center.
+## Notes:
+> Coinbase Exchange [data centers](https://docs.cloud.coinbase.com/exchange/docs/data-centers) are in the Amazon US East N. Virginia (us-east-1) region. To minimize latency for API access, we recommend making requests from servers located near this data center.
+> This codebase is maintained independently of Coinbase. I am not in any way affiliated with coinbase or coinbase pro.
 
->Some of the methods do not yet have tests and so may not work as expected until a later date. Please raise an issue in github if you want something in particular as a priority. I'll be looking to fully flesh this out if possible over the coming months.
+The Services and Data objects returned should match the interface specified in the Coinbase Pro api: [https://docs.pro.coinbase.com/#api](https://docs.pro.coinbase.com/#api).
 
-#Examples
---------
-To make use of this library you only need a reference to the service that you want.
+## Prerequisites
 
-At present the classes match the interface specified in the coinbase/gdax api here: https://docs.gdax.com/#api
+You will need to have an account on the [Coinbase Pro API](https://docs.pro.coinbase.com/) and obtain a valid API key for your account at [API Settings](https://pro.coinbase.com/profile/api).
 
-e.g.
-`public OrderService orderService(){
-    new OrderService();
-}`
+## Usage
+To make use of this library, in a spring boot application, just add a dependency to the autoconfigure module,
 
-This works better if you declare the above method as a spring bean and then wire it in using dependency injection.
+```xml
+<dependency>
+    <groupId>com.mayhoo</groupId>
+    <artifactId>coinbasepro-autoconfigure</artifactId>
+    <version>${coinbasepro.version}</version>
+</dependency>
+```
 
-Then in your method you can carry out any of the public api operations such as `orderService().createOrder(NewSingleOrder order);` - this creates a limit order. Currently this is only the basic order.
-#API
---------
-The Api for this application/library is as follows:
-(Note: this section is likely to change but is provided on the basis it will work well for example usage)
+You will need to add properties with your own coinbase pro api key, secret, and passphrase. (Testing can be done with a [sandbox key](https://docs.cloud.coinbase.com/exchange/docs/sandbox).)
 
-- `AccountService.getAccounts()` - returns an array of all Accounts
-- `AccountService.getAccountHistory(String accountId)` - returns the history for a given account
-- `AccountService.getHolds(String accountId)` - returns an array of all held funds for a given account.
-- `DepositService.depositViaPaymentMethod(BigDecimal amount, String currency, String paymentMethodId)` - makes a deposit from a stored payment method into your GDAX account
-- `DepositService.coinbaseDeposit(BigDecimal amount, String currency, String coinbaseAccountId)` - makes a deposit from a coinbase account into your GDAX account
-- `MarketDataService.getMarketDataOrderBook(String productId, String level)` - a call to ProductService.getProducts() will return the order book for a given product. You can then use the WebsocketFeed api to keep your orderbook up to date. This is implemented in this codebase. Level can be 1 (top bid/ask only), 2 (top 50 bids/asks only), 3 (entire order book - takes a while to pull the data.)
-- `OrderService.getOpenOrders(String accountId)` - returns an array of Orders for any outstanding orders
-- `OrderService.cancelOrder(String orderId)` - cancels a given order
-- `OrderService.createOrder(NewOrderSingle aSingleOrder)` - construct an order and send it to this method to place an order for a given product on the exchange.
-- `PaymentService.getCoinbaseAccounts()` - gets the coinbase accounts for the logged in user
-- `PaymentService.getPaymentTypes()` - gets the payment types available for the logged in user
-- `ProductService.getProducts()` - returns an array of Products available from the exchange - BTC-USD, BTC-EUR, BTC-GBP, etc.
-- `ReportService.createReport(String product, String startDate, String endDate)` - not certain about this one as I've not tried it but presumably generates a report of a given product's trade history for the dates supplied
+```properties
+#coinbasepro.baseUrl=https://api-public.sandbox.pro.coinbase.com/
+coinbasepro.baseUrl=https://api.pro.coinbase.com/
+coinbasepro.key=KEY
+coinbasepro.secret=SECRET
+coinbasepro.passphrase=PASSPHRASE
+```
 
-#Updates
---------
-- converted to using Gradle
-- converted to using SpringBoot for DI and request building
-- updated all libraries used - removed some unnecessary libraries
-- refactored the code to remove error handling from every method (rightly/wrongly) - its easier to maintain and extend now as a result
-- more modular code that matches the service api - favour composition over inheritance
-- removed a lot of boilerplate code
-- logging added - Logging will output an equivalent curl command now for each get/post/delete request so that when debugging you can copy the curl request and execute it on the command line.
-- service tests added for sanity - no unit tests against the data objects
-- better configuration options using `application.yml` for your live environment and `application-test.yml` for your sandbox environment.
-- banner displayed (specific to each environment) :)
-- generally more structure.
-- added pagination to all the relevant calls (some not supported since it seems pointless due to the limited offering from gdax - e.g. products)
+You will be able to autowire and use the services that you want.
+
+```java
+@Bean
+@Autowired
+public MyClassToSubmitOrders myClassToSubmitOrders(OrderService orderService) {
+        return new MyClassToSubmitOrdersImpl(orderService);
+}
+```
+
+In your method you can carry out any of the public api operations such
+as `orderService().createOrder(order);` - this creates a limit order. 
+
+In non-Spring Boot applications, you can similarly use the classes directly, without the autowiring by adding a dependency on the `coinbasepro-impl` module.
+
+## API
+This library mimics the [Coinbase API](https://docs.cloud.coinbase.com/exchange/reference/exchangerestapi_getaccounts).  
+
+These are the main services that are available:
+
+### **TransferService**, **DepositService**, and **WithdrawalsService**
+  are used to transfer money into and out of your Coinbase Pro account. It can be between a bank or Coinbase account and a Coinbase Pro account.
+
+### **OrderService** 
+  Is used to create, cancel, and get info on orders.
+
+### **ProductService**
+  Gets a list of available currency pairs for trading.
+
+### **MarketDataService**
+  Is used to access market data. (this service is public)
+
+### **PaymentService**
+  Gets a list of the user's linked payment methods. Also gets all the user's available Coinbase wallets (These are the wallets/accounts that are used for buying and selling on www.coinbase.com)
+
+### **ReportService**
+  Reports are either for past account history or past fills on either all accounts or one product's account.
+
+### **AccountService** and **UserAccountService**
+  Gets the user's account information.
+
+### *CoinbaseProExchangeImpl* and *SignatureImpl* 
+  These classes are used internally to handle all the authentication, signing, and JSON Marshalling/Unmarshalling aspects of the api. It is used by the above services to make calls to the api, it can be used to add additional calls that are not yet supported by this library.
+
+## Credits
+
+This library was originally forked from [irufus/gdax-java](https://github.com/irufus/gdax-java). It has many changes and adds a high level of test coverage.

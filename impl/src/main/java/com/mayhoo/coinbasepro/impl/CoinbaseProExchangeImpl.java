@@ -25,6 +25,10 @@ import static org.springframework.http.HttpMethod.GET;
 @RequiredArgsConstructor
 @ToString(exclude = {"publicKey", "passphrase", "signature", "restTemplate"})
 public class CoinbaseProExchangeImpl implements CoinbaseProExchange {
+    private static final String GET_METHOD = "GET";
+    private static final String DELETE_METHOD = "DELETE";
+    private static final String POST_METHOD = "POST";
+
     String publicKey;
     String passphrase;
     String baseUrl;
@@ -37,7 +41,7 @@ public class CoinbaseProExchangeImpl implements CoinbaseProExchange {
             ResponseEntity<T> responseEntity = restTemplate.exchange(getBaseUrl() + resourcePath,
                     GET,
                     securityHeaders(resourcePath,
-                            "GET",
+                            GET_METHOD,
                             ""),
                     responseClass);
             return responseEntity.getBody();
@@ -62,7 +66,7 @@ public class CoinbaseProExchangeImpl implements CoinbaseProExchange {
         try {
             ResponseEntity<T> response = restTemplate.exchange(getBaseUrl() + resourcePath,
                     HttpMethod.DELETE,
-                    securityHeaders(resourcePath, "DELETE", ""),
+                    securityHeaders(resourcePath, DELETE_METHOD, ""),
                     responseClass);
             return response.getBody();
         } catch (HttpClientErrorException ex) {
@@ -79,7 +83,7 @@ public class CoinbaseProExchangeImpl implements CoinbaseProExchange {
         try {
             ResponseEntity<T> response = restTemplate.exchange(getBaseUrl() + resourcePath,
                     HttpMethod.POST,
-                    securityHeaders(resourcePath, "POST", jsonBody),
+                    securityHeaders(resourcePath, POST_METHOD, jsonBody),
                     responseClass);
             return response.getBody();
         } catch (HttpClientErrorException ex) {
@@ -95,8 +99,8 @@ public class CoinbaseProExchangeImpl implements CoinbaseProExchange {
         String timestamp = Instant.now().getEpochSecond() + "";
         String resource = endpoint.replace(getBaseUrl(), "");
 
-        headers.add("accept", "application/json");
-        headers.add("content-type", "application/json");
+        headers.add("Accept", "application/json");
+        headers.add("Content-Type", "application/json");
         headers.add("CB-ACCESS-KEY", publicKey);
         headers.add("CB-ACCESS-SIGN", signature.generate(resource, method, jsonBody, timestamp));
         headers.add("CB-ACCESS-TIMESTAMP", timestamp);

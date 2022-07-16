@@ -14,13 +14,14 @@ import lombok.Value;
 public class OrderServiceImpl implements OrderService {
     private static final String ORDERS_ENDPOINT = "/orders";
     private static final String FILLS_ENDPOINT = "/fills";
-    private static final String OPEN_ORDERS_METHOD = "/orders";
+    private static final String OPEN_ORDERS = "/orders";
+    private static final String HOLDS = "/holds";
 
     CoinbaseProExchange exchange;
 
     @Override
     public Hold[] getAccountHolds(String accountId) {
-        return exchange.get(ORDERS_ENDPOINT + "/" + accountId + "/holds",
+        return exchange.get(ORDERS_ENDPOINT + "/" + accountId + HOLDS,
                 Hold[].class);
     }
 
@@ -29,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
                                        String beforeOrAfter,
                                        Integer pageNumber,
                                        Integer limit) {
-        return exchange.pagedGet(ORDERS_ENDPOINT + "/" + accountId + "/holds",
+        return exchange.pagedGet(ORDERS_ENDPOINT + "/" + accountId + HOLDS,
                 Hold[].class,
                 beforeOrAfter,
                 pageNumber,
@@ -38,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order[] getAccountOpenOrders(String accountId) {
-        return exchange.get(ORDERS_ENDPOINT + "/" + accountId + OPEN_ORDERS_METHOD,
+        return exchange.get(ORDERS_ENDPOINT + "/" + accountId + OPEN_ORDERS,
                 Order[].class);
     }
 
@@ -47,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
                                              String beforeOrAfter,
                                              Integer pageNumber,
                                              Integer limit) {
-        return exchange.pagedGet(ORDERS_ENDPOINT + "/" + accountId + OPEN_ORDERS_METHOD,
+        return exchange.pagedGet(ORDERS_ENDPOINT + "/" + accountId + OPEN_ORDERS,
                 Order[].class,
                 beforeOrAfter,
                 pageNumber,

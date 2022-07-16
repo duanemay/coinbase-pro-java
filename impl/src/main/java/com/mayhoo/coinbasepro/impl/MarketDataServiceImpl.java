@@ -11,12 +11,14 @@ import lombok.Value;
 @RequiredArgsConstructor
 public class MarketDataServiceImpl implements MarketDataService {
     private static final String PRODUCT_ENDPOINT = "/products";
+    private static final String BOOK = "/book";
+    private static final String TRADES = "/trades";
 
     CoinbaseProExchange exchange;
 
     @Override
     public MarketData getMarketDataOrderBook(String productId, String level) {
-        String marketDataEndpoint = PRODUCT_ENDPOINT + "/" + productId + "/book";
+        String marketDataEndpoint = PRODUCT_ENDPOINT + "/" + productId + BOOK;
         if (level != null && !level.equals("")) {
             marketDataEndpoint += "?level=" + level;
         }
@@ -25,7 +27,8 @@ public class MarketDataServiceImpl implements MarketDataService {
 
     @Override
     public Trade[] getTrades(String productId) {
-        String tradesEndpoint = PRODUCT_ENDPOINT + "/" + productId + "/trades";
+        String tradesEndpoint = PRODUCT_ENDPOINT + "/" + productId + TRADES;
         return exchange.get(tradesEndpoint, Trade[].class);
+
     }
 }
